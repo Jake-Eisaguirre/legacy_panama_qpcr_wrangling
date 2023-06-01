@@ -41,23 +41,26 @@ clean_atelopus <- atelopus %>%
   select(!c(sample_type, site, species, home_base, preservative, notes_7, status, 
             location_of_sample)) %>% 
   rename(comments = notes_19,
-         bd_swab_id = frog_id) %>% 
+         bd_swab_id = frog_id,
+         average_zoospores = swab_result) %>% 
   mutate(extraction_kit = str_to_lower(str_replace_all(extraction_kit, " ", "_")),
          ct = if_else(is.na(ct), 0, ct),
          quantity = if_else(is.na(quantity), 0, quantity),
-         swab_result = if_else(is.na(swab_result), 0, swab_result))
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
 
 
 ```
 
-## fall_2012
+## fall_2012 - extraction kit?
 ```{r}
 
 clean_fall_2012 <- fall_2012 %>% 
   clean_names() %>% 
   select(!c(site, species)) %>% 
   rename(comments = notes,
-         bd_swab_id = swab) %>% 
+         bd_swab_id = swab,
+         extraction_plate_id = extraction_plate,
+         pcr_plate_id = pcr_plate) %>% 
   mutate(bd_swab_id = str_replace_all(bd_swab_id, "-", "_"),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
   
