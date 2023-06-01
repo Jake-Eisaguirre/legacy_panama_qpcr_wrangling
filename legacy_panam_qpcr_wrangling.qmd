@@ -31,3 +31,23 @@ for (i in file_list){
 
 ```
 
+Columns:
+
+## Atelopus 
+```{r}
+
+clean_atelopus <- atelopus %>% 
+  clean_names() %>% 
+  select(!c(sample_type, site, species, home_base, preservative, notes_7, status, 
+            location_of_sample)) %>% 
+  rename(comments = notes_19) %>% 
+  mutate(extraction_kit = str_to_lower(str_replace_all(extraction_kit, " ", "_")),
+         ct = if_else(is.na(ct), 0, ct),
+         quantity = if_else(is.na(quantity), 0, quantity),
+         swab_result = if_else(is.na(swab_result), 0, swab_result))
+
+
+
+
+```
+
