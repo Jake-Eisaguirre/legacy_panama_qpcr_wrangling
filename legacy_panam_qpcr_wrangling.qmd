@@ -45,10 +45,11 @@ clean_atelopus <- atelopus %>%
             location_of_sample)) %>% 
   rename(comments = notes_19,
          bd_swab_id = frog_id,
-         average_zoospores = swab_result) %>% 
+         average_zoospores = swab_result,
+         average_copy_number = quantity) %>% 
   mutate(extraction_kit = str_to_lower(str_replace_all(extraction_kit, " ", "_")),
          ct = if_else(is.na(ct), 0, ct),
-         quantity = if_else(is.na(quantity), 0, quantity),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
 
 
@@ -83,13 +84,71 @@ clean_2014 <- qpcr_2014 %>%
          comments = additional_notes,
          pcr_plate_id = pcr_plate,
          extraction_plate_id = extraction_plate,
-         ct = ct_vlues,
-         quantity = average_copy_number) %>% 
+         ct = ct_vlues) %>% 
   mutate(result = if_else(result == "0", "n,n,n", result),
          bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
          ct = if_else(is.na(ct), 0, ct),
-         quantity = if_else(is.na(quantity), 0, quantity),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
+
+```
+
+## winter_2013
+```{r}
+
+clean_winter_2013 <- winter_2013 %>% 
+  clean_names() %>% 
+  select(!c(site, species)) %>% 
+  rename(bd_swab_id = swab,
+         average_zoospores = swab_result,
+         comments = additional_notes,
+         pcr_plate_id = pcr_plate,
+         extraction_plate_id = extraction_plate,
+         ct = ct_vlues) %>% 
+  mutate(ct = if_else(is.na(ct), 0, ct),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
+          bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")))
+
+```
+
+## qpcr_2015
+```{r}
+
+clean_2015 <- qpcr_2015 %>% 
+  clean_names() %>% 
+  select(!c(site, species)) %>% 
+  rename(bd_swab_id = frog_id,
+         average_zoospores = swab_result,
+         comments = additional_notes,
+         ct = mean_ct_value,
+         average_copy_number = mean_copy_number) %>% 
+  mutate(ct = if_else(is.na(ct), 0, ct),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
+         result = if_else(result == "0", "n,n,n", result),
+         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")))
+  
+
+```
+
+## qpcr_2016
+```{r}
+
+clean_2016 <- qpcr_2016 %>% 
+  clean_names() %>% 
+  select(!c(site, species)) %>% 
+  rename(bd_swab_id = frog_id,
+         average_zoospores = swab_result,
+         comments = additional_notes,
+         ct = mean_ct_value,
+         average_copy_number = mean_copy_number)%>% 
+  mutate(ct = if_else(is.na(ct), 0, ct),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
+         result = if_else(result == "0", "n,n,n", result),
+         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")))
+
 
 ```
 
