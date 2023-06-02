@@ -5,6 +5,7 @@ editor: visual
 ---
 
 ## Load Packages
+
 ```{r}
 
 if(!require(librarian)){
@@ -17,6 +18,7 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
 ```
 
 ## Read in all .xlxs files
+
 ```{r}
 
 file_list <- gsub("\\.xlsx$","", list.files(here("data")))
@@ -33,7 +35,8 @@ for (i in file_list){
 
 Columns:
 
-## Atelopus 
+## Atelopus
+
 ```{r}
 
 clean_atelopus <- atelopus %>% 
@@ -52,6 +55,7 @@ clean_atelopus <- atelopus %>%
 ```
 
 ## fall_2012 - extraction kit?
+
 ```{r}
 
 clean_fall_2012 <- fall_2012 %>% 
@@ -62,8 +66,30 @@ clean_fall_2012 <- fall_2012 %>%
          extraction_plate_id = extraction_plate,
          pcr_plate_id = pcr_plate) %>% 
   mutate(bd_swab_id = str_replace_all(bd_swab_id, "-", "_"),
-         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
+         bd_swab_id = str_remove_all(bd_swab_id, "\\*"))
   
+
+```
+
+## qpcr_2014
+```{r}
+
+clean_2014 <- qpcr_2014 %>% 
+  clean_names() %>% 
+  select(!c(site, species)) %>% 
+  rename(bd_swab_id = id,
+         average_zoospores = swab_result,
+         comments = additional_notes,
+         pcr_plate_id = pcr_plate,
+         extraction_plate_id = extraction_plate,
+         ct = ct_vlues,
+         quantity = average_copy_number) %>% 
+  mutate(result = if_else(result == "0", "n,n,n", result),
+         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
+         ct = if_else(is.na(ct), 0, ct),
+         quantity = if_else(is.na(quantity), 0, quantity),
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
 
 ```
 
