@@ -172,16 +172,22 @@ clean_2016 <- qpcr_2016 %>%
 
 panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013)
 
+write_csv(panama_qpcr, here("data_csv", "panama_qpcr.csv"))
+
 ```
 
 
 ## find missing IDs still
 ```{r}
 
-all_ids <- read_csv(here("data", "2012_2017_bdswab_search.csv"))
+all_ids <- read_csv(here("data_csv", "2012_2017_bdswab_search_clz.csv"))
 
 missing_ids <- all_ids %>% 
   anti_join(panama_qpcr, by = c("bd_swab_id"))
+
+write_csv(missing_ids, here("data_csv", "remaining_missing_ids.csv"))
+
+
 
 ```
 
