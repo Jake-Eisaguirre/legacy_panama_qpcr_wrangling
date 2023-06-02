@@ -50,7 +50,12 @@ clean_atelopus <- atelopus %>%
   mutate(extraction_kit = str_to_lower(str_replace_all(extraction_kit, " ", "_")),
          ct = if_else(is.na(ct), 0, ct),
          average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
-         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
+         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
+         standard = "pisces",
+         extraction_kit = "bioline",
+         result = if_else(result == "positive", "p", result),
+         result = if_else(result == "negative", "n", result))
 
 
 ```
@@ -68,7 +73,9 @@ clean_fall_2012 <- fall_2012 %>%
          pcr_plate_id = pcr_plate) %>% 
   mutate(bd_swab_id = str_replace_all(bd_swab_id, "-", "_"),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
-         bd_swab_id = str_remove_all(bd_swab_id, "\\*"))
+         bd_swab_id = str_remove_all(bd_swab_id, "\\*"),
+         standard = "hyatt zoospore-based",
+         extraction_kit = "taqman")
   
 
 ```
@@ -89,7 +96,9 @@ clean_2014 <- qpcr_2014 %>%
          bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
          ct = if_else(is.na(ct), 0, ct),
          average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
-         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores))
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
+         standard = "pisces",
+         extraction_kit = "taqman")
 
 ```
 
@@ -108,7 +117,9 @@ clean_winter_2013 <- winter_2013 %>%
   mutate(ct = if_else(is.na(ct), 0, ct),
          average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
-          bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")))
+          bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
+         standard = "pisces",
+         extraction_kit = "taqman")
 
 ```
 
@@ -127,7 +138,9 @@ clean_2015 <- qpcr_2015 %>%
          average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
          result = if_else(result == "0", "n,n,n", result),
-         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")))
+         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
+         standard = "pisces",
+         extraction_kit = "taqman")
   
 
 ```
@@ -147,8 +160,28 @@ clean_2016 <- qpcr_2016 %>%
          average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
          result = if_else(result == "0", "n,n,n", result),
-         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")))
+         bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
+         standard = "pisces",
+         extraction_kit = "bioline")
 
+
+```
+
+## Bind all tables together
+```{r}
+
+panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013)
+
+```
+
+
+## find missing IDs still
+```{r}
+
+all_ids <- read_csv(here("data", "2012_2017_bdswab_search.csv"))
+
+missing_ids <- all_ids %>% 
+  anti_join(panama_qpcr, by = c("bd_swab_id"))
 
 ```
 
