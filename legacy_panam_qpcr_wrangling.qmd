@@ -244,4 +244,9 @@ write_csv(missing_ids, here("data_csv", "remaining_missing_ids.csv"))
 
 
 
+plates <- panama_qpcr %>% 
+  select(bd_swab_id, extraction_plate_id, pcr_plate_id) %>% 
+  write_csv(here("data_csv", "extraction_ids.csv"))
+  
+
 ```
