@@ -81,6 +81,7 @@ clean_fall_2012 <- fall_2012 %>%
 ```
 
 ## qpcr_2014
+
 ```{r}
 
 clean_2014 <- qpcr_2014 %>% 
@@ -103,6 +104,7 @@ clean_2014 <- qpcr_2014 %>%
 ```
 
 ## winter_2013
+
 ```{r}
 
 clean_winter_2013 <- winter_2013 %>% 
@@ -123,7 +125,30 @@ clean_winter_2013 <- winter_2013 %>%
 
 ```
 
+## summer_2013
+```{r}
+
+clean_summer_2013 <- summer_2013 %>% 
+  clean_names() %>% 
+  select(!c(site, species, location)) %>% 
+  rename(bd_swab_id = swab,
+         average_zoospores = swab_result,
+         comments = additional_notes,
+         pcr_plate_id = pcr_plate,
+         extraction_plate_id = extraction_plate,
+         ct = ct_number) %>% 
+  mutate(ct = if_else(is.na(ct), 0, ct),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
+         average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
+          bd_swab_id = str_to_lower(str_replace_all(bd_swab_id, "-", "_")),
+         standard = "pisces",
+         extraction_kit = "taqman")
+
+```
+
+
 ## qpcr_2015
+
 ```{r}
 
 clean_2015 <- qpcr_2015 %>% 
@@ -146,6 +171,7 @@ clean_2015 <- qpcr_2015 %>%
 ```
 
 ## qpcr_2016
+
 ```{r}
 
 clean_2016 <- qpcr_2016 %>% 
@@ -168,16 +194,17 @@ clean_2016 <- qpcr_2016 %>%
 ```
 
 ## Bind all tables together
+
 ```{r}
 
-panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013)
+panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013)
 
 write_csv(panama_qpcr, here("data_csv", "panama_qpcr.csv"))
 
 ```
 
-
 ## find missing IDs still
+
 ```{r}
 
 all_ids <- read_csv(here("data_csv", "2012_2017_bdswab_search_clz.csv"))
@@ -190,4 +217,3 @@ write_csv(missing_ids, here("data_csv", "remaining_missing_ids.csv"))
 
 
 ```
-
