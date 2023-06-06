@@ -214,20 +214,74 @@ clean_2016 <- qpcr_2016 %>%
 
 ```
 
+
+## js086-88 missing IDs
+```{r}
+
+js86 <- js086 %>% 
+  slice(c(7:199)) %>% 
+  row_to_names(row_number = 1) %>% 
+  clean_names()
+
+js87 <- js087 %>% 
+  slice(c(7:103)) %>% 
+  row_to_names(row_number = 1) %>% 
+  clean_names()
+
+js88 <- js088 %>% 
+  slice(c(7:103)) %>% 
+  row_to_names(row_number = 1) %>% 
+  clean_names()
+
+js_samps <- plyr::rbind.fill(js86, js87, js88) %>% 
+  select(sample_name, ct_mean, quantity_mean, comments) %>% 
+  filter(!str_detect(sample_name, "Pisces"),
+         !str_detect(sample_name, "NEG"),
+         !str_detect(sample_name, "POS")) %>% 
+  mutate(sample_name = str_replace_all(str_to_lower(sample_name), "-", "_"),
+         ct_mean = as.numeric(ct_mean),
+         quantity_mean = as.numeric(quantity_mean),
+         ct_mean = round(if_else(is.na(ct_mean), 0, ct_mean), 2),
+         quantity_mean = round(if_else(is.na(quantity_mean), 0, quantity_mean), 2)) %>% 
+  rename(bd_swab_id = sample_name,
+         ct = ct_mean,
+         quantity = quantity_mean) %>% 
+  mutate(result = if_else(!ct == 0, "p", "n")) %>% 
+  group_by(bd_swab_id) %>% 
+  reframe(ct = mean(ct),
+            average_copy_number = mean(quantity),
+            result = aggregate(result ~ bd_swab_id, FUN = paste, collapse = ",")) %>% 
+  unnest() %>% 
+  select(!c(bd_swab_id1)) %>% 
+  mutate(standard = "pisces",
+         master_mix = "taqman",
+         replicate = "quadruplicates",
+         qpcr_machine = "abi_7500",
+         extraction_kit = "qiagen_dneasy",
+         pcr_plate_id = "js086-088")
+
+```
+
+
 ## Bind all tables together
 
 ```{r}
 
-panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013) %>% 
+panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013, js_samps) %>% 
   rename(average_ct = ct) %>% 
   mutate(average_zoospores = round(average_zoospores, 2),
          average_copy_number = round(average_copy_number, 2),
          average_ct = round(average_ct, 2),
          across(everything(), str_to_lower))
 
+
+
 write_csv(panama_qpcr, here("data_csv", "panama_qpcr.csv"))
 
 ```
+
+
+
 
 ## find missing IDs still
 
