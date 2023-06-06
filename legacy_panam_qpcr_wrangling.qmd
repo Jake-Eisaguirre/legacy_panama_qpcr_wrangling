@@ -215,7 +215,7 @@ clean_2016 <- qpcr_2016 %>%
 ```
 
 
-## js086-88 missing IDs
+## js086-88 missing IDs - NEED to calculate out average zoospore
 ```{r}
 
 js86 <- js086 %>% 
@@ -249,8 +249,8 @@ js_samps <- plyr::rbind.fill(js86, js87, js88) %>%
   mutate(result = if_else(!ct == 0, "p", "n")) %>% 
   group_by(bd_swab_id) %>% 
   reframe(ct = mean(ct),
-            average_copy_number = mean(quantity),
-            result = aggregate(result ~ bd_swab_id, FUN = paste, collapse = ",")) %>% 
+          average_copy_number = mean(quantity),
+          result = aggregate(result ~ bd_swab_id, FUN = paste, collapse = ",")) %>% 
   unnest() %>% 
   select(!c(bd_swab_id1)) %>% 
   mutate(standard = "pisces",
@@ -258,7 +258,21 @@ js_samps <- plyr::rbind.fill(js86, js87, js88) %>%
          replicate = "quadruplicates",
          qpcr_machine = "abi_7500",
          extraction_kit = "qiagen_dneasy",
-         pcr_plate_id = "js086-088")
+         pcr_plate_id = "js086-088",
+         average_zoospores = (average_copy_number * 400),
+         comments = "CAUTION average_zoospores values calculated estimate of a 400 dillution factor - CZ")
+
+```
+
+## 2019_qpcr
+
+```{r}
+
+clean_2019 <- qpcr_2019 %>% 
+  clean_names() %>% 
+  select(!c(well, well_position, site, region_code, site_code, species, ipc, bd_pos_neg, extraction_tech, extraction_lab, q_pcr_tech,
+            q_pcr_lab))
+  
 
 ```
 

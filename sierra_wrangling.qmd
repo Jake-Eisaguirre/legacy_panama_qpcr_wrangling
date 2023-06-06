@@ -1,0 +1,23 @@
+---
+title: "Sierra qPCR Wrangling"
+format: html
+editor: visual
+---
+
+## Load Packages
+
+```{r}
+
+if(!require(librarian)){
+  install.packages(librarian)
+  library(librarian)
+}
+
+shelf(tidyverse, here, DBI, RPostgres, janitor)
+
+```
+
+```{r}
+
+```
+
