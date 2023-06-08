@@ -214,8 +214,8 @@ clean_2016 <- qpcr_2016 %>%
 
 ```
 
-
 ## js086-88 missing IDs - NEED to calculate out average zoospore
+
 ```{r}
 
 js86 <- js086 %>% 
@@ -270,18 +270,28 @@ js_samps <- plyr::rbind.fill(js86, js87, js88) %>%
 
 clean_2019 <- qpcr_2019 %>% 
   clean_names() %>% 
-  select(!c(well, well_position, site, region_code, site_code, species, ipc, bd_pos_neg, extraction_tech, extraction_lab, q_pcr_tech,
-            q_pcr_lab))
+  select(!c(well, well_position, site, region_code, site_code, species, ipc, bd_pos_neg, extraction_tech, extraction_lab, q_pcr_tech, q_pcr_lab, ext_pos_quality, ext_neg_quality, sample_type, rerun)) %>% 
+  rename(bd_swab_id = sample_name,
+         ct = bd_ct_mean,
+         average_copy_number = bd_quantity_mean,
+         extraction_plate_id = extraction_plate,
+         pcr_plate_id = q_pcr_plate) %>% 
+  mutate(standard = "pisces",
+         master_mix = "bioline",
+         replicate = "triplicate",
+         qpcr_machine = "quantstudio_3",
+         extraction_kit = "qiagen_dneasy",
+         ct = if_else(is.na(ct), 0, ct),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number))
   
 
 ```
-
 
 ## Bind all tables together
 
 ```{r}
 
-panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013, js_samps) %>% 
+panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013, js_samps, clean_2019) %>% 
   rename(average_ct = ct) %>% 
   mutate(average_zoospores = round(average_zoospores, 2),
          average_copy_number = round(average_copy_number, 2),
@@ -293,9 +303,6 @@ panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelop
 write_csv(panama_qpcr, here("data_csv", "panama_qpcr.csv"))
 
 ```
-
-
-
 
 ## find missing IDs still
 
