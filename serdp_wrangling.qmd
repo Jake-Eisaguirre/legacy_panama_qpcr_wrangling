@@ -4,7 +4,6 @@ format: html
 editor: visual
 ---
 
-
 ## Load Packages
 
 ```{r}
@@ -17,3 +16,26 @@ if(!require(librarian)){
 shelf(tidyverse, here, DBI, RPostgres, janitor)
 
 ```
+
+## Read in raw data
+```{r}
+
+qpcr_2017 <- read_csv(here("data_csv", "qPCR_results_serdp", "SERDP qPCR results 2017_220721.csv")) %>% 
+  clean_names()
+
+qpcr_2018 <- read_csv(here("data_csv","qPCR_results_serdp", "SERDP qPCR results 2018_191129.csv")) %>% 
+  clean_names()
+
+qpcr_2019 <- read_csv(here("data_csv", "qPCR_results_serdp","SERDP qPCR results 2019_220721.csv")) %>% 
+  clean_names()
+
+all_qpcr <- plyr::rbind.fill(qpcr_2017, qpcr_2018, qpcr_2019) 
+
+clean_qpcr <- all_qpcr %>% 
+  select(sample_id, extract_plate_id, extract_date, qpcr_plate_id, qpcr_date, sample_bd_ct, sample_bd_qty, sample_bd_swab_qty, extract_lab, qpcr_lab) %>% 
+  rename(bd_swab_id = sample_id,
+         average_ct = sample_bd_ct,
+         average_zoospores = sample_bd_swab_qty)
+
+```
+

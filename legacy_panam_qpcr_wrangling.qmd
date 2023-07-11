@@ -282,7 +282,8 @@ clean_2019 <- qpcr_2019 %>%
          qpcr_machine = "quantstudio_3",
          extraction_kit = "qiagen_dneasy",
          ct = if_else(is.na(ct), 0, ct),
-         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number))
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
+         average_zoospores = (40*average_copy_number))
   
 
 ```
@@ -292,11 +293,15 @@ clean_2019 <- qpcr_2019 %>%
 ```{r}
 
 panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013, js_samps, clean_2019) %>% 
-  rename(average_ct = ct) %>% 
+  rename(average_ct = ct,
+         qpcr_plate_id = prc_plate_id,
+         qpcr_date = q_pcr_date) %>% 
   mutate(average_zoospores = round(average_zoospores, 2),
          average_copy_number = round(average_copy_number, 2),
          average_ct = round(average_ct, 2),
-         across(everything(), str_to_lower))
+         across(c(c(bd_swab_id:pcr_plate_id), c(comments:extraction_kit)), str_to_lower),
+         extract_lab = "",
+         qpcr_lab = "")
 
 
 
