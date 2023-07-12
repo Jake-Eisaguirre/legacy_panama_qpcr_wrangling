@@ -292,14 +292,15 @@ clean_2019 <- qpcr_2019 %>%
 
 ```{r}
 
-panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013, js_samps, clean_2019) %>% 
+panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelopus, clean_fall_2012, clean_winter_2013, clean_summer_2013, 
+                                js_samps, clean_2019) %>% 
   rename(average_ct = ct,
-         qpcr_plate_id = prc_plate_id,
+         qpcr_plate_id = pcr_plate_id,
          qpcr_date = q_pcr_date) %>% 
   mutate(average_zoospores = round(average_zoospores, 2),
          average_copy_number = round(average_copy_number, 2),
          average_ct = round(average_ct, 2),
-         across(c(c(bd_swab_id:pcr_plate_id), c(comments:extraction_kit)), str_to_lower),
+         across(c(c(bd_swab_id:qpcr_plate_id), c(comments:extraction_kit)), str_to_lower),
          extract_lab = "",
          qpcr_lab = "")
 
