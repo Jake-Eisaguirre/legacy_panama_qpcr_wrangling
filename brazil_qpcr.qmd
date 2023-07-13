@@ -1,0 +1,59 @@
+---
+title: "brazil_qpcr_wrangling"
+format: html
+editor: visual
+---
+
+## Load Packages
+
+```{r}
+
+if(!require(librarian)){
+  install.packages(librarian)
+  library(librarian)
+}
+
+shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
+
+```
+
+# Climate Change Data
+
+## Read in Data
+```{r}
+
+clim_change <- read_excel(here("data", "FINAL_DATASET_PCE_qPCRs_RIBBiTR.xlsx"))
+
+
+```
+
+## Clean Data
+```{r}
+
+climate_qpcr_data <- clim_change %>% 
+  select(SWAB, zoo.load..100, log10..1) %>% 
+  rename(bd_swab_id = SWAB) %>% 
+  filter(!bd_swab_id == ".")
+
+```
+
+
+# Landscape Data
+
+## Read in Data
+```{r}
+
+landscape <- read_excel(here("data", "Landscapes_RoL_Becker.xlsx")) %>% 
+  clean_names()
+
+```
+
+## Clean data
+```{r}
+
+landscape_qpcr_data <- landscape %>% 
+  select(sample_id, plate, c(quantity_1:final_bd_load_log))
+
+
+```
+
