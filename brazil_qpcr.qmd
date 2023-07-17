@@ -17,9 +17,12 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
 
 ```
 
+[Column Headers]{.underline}: bd_swab_id, extraction_plate_id, qpcr_plate_id, result, average_copy_number, average_ct, average_zoospores, comments, standard, master_mix, replicate, qpcr_machine, extraction_kit, extraction_date, qpcr_date, extract_lab, extract_lab
+
 # Climate Change Data
 
 ## Read in Data
+
 ```{r}
 
 clim_change <- read_excel(here("data", "FINAL_DATASET_PCE_qPCRs_RIBBiTR.xlsx"))
@@ -28,19 +31,21 @@ clim_change <- read_excel(here("data", "FINAL_DATASET_PCE_qPCRs_RIBBiTR.xlsx"))
 ```
 
 ## Clean Data
+
 ```{r}
 
 climate_qpcr_data <- clim_change %>% 
   select(SWAB, zoo.load..100, log10..1) %>% 
   rename(bd_swab_id = SWAB) %>% 
-  filter(!bd_swab_id == ".")
+  filter(!bd_swab_id == ".") %>% 
+  mutate()
 
 ```
-
 
 # Landscape Data
 
 ## Read in Data
+
 ```{r}
 
 landscape <- read_excel(here("data", "Landscapes_RoL_Becker.xlsx")) %>% 
@@ -48,7 +53,9 @@ landscape <- read_excel(here("data", "Landscapes_RoL_Becker.xlsx")) %>%
 
 ```
 
+
 ## Clean data
+
 ```{r}
 
 landscape_qpcr_data <- landscape %>% 
@@ -56,4 +63,3 @@ landscape_qpcr_data <- landscape %>%
 
 
 ```
-
