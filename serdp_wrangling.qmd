@@ -32,7 +32,6 @@ qpcr_2019 <- read_csv(here("data_csv", "qPCR_results_serdp","SERDP qPCR results 
 
 all_qpcr <- plyr::rbind.fill(qpcr_2017, qpcr_2018, qpcr_2019) 
 
-
 ```
 
 ## Clean and Align
