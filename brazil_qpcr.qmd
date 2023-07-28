@@ -17,7 +17,17 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
 
 ```
 
-[Column Headers]{.underline}: bd_swab_id, extraction_plate_id, qpcr_plate_id, result, average_copy_number, average_ct, average_zoospores, comments, standard, master_mix, replicate, qpcr_machine, extraction_kit, extraction_date, qpcr_date, extract_lab, extract_lab
+[Column Headers]{.underline}: bd_swab_id, extraction_plate_id, qpcr_plate_id, result, average_copy_number, average_ct, average_zoospores, comments, standard, master_mix, replicate, qpcr_machine, extraction_kit, extraction_date, qpcr_date, extract_lab,
+
+standard: pisces
+extraction_kit: ibi_spin_column_blood_tissue_kit
+dillution: 100 uml
+master_mix: tachman
+replicate: ipc, 7 standards
+qpcr_machine: quant studio 3
+extract_lab: becker_lab
+
+
 
 # Climate Change Data
 
@@ -31,14 +41,21 @@ clim_change <- read_excel(here("data", "FINAL_DATASET_PCE_qPCRs_RIBBiTR.xlsx"))
 ```
 
 ## Clean Data
+- 100 = its copies
 
 ```{r}
 
 climate_qpcr_data <- clim_change %>% 
-  select(SWAB, zoo.load..100, log10..1) %>% 
+  select(SWAB, zoo.load..100) %>% 
   rename(bd_swab_id = SWAB) %>% 
   filter(!bd_swab_id == ".") %>% 
-  mutate()
+  mutate(extraction_kit = "ibi_spin_column_blood_tissue_kit",
+         master_mix = "taqman",
+         replicate = "singley",
+         qpcr_machine = "quantstudio_3",
+         extract_lab = "becker_lab",
+         qpcr_lab = "becker_lab",
+         standard = "pisces")
 
 ```
 
@@ -53,13 +70,20 @@ landscape <- read_excel(here("data", "Landscapes_RoL_Becker.xlsx")) %>%
 
 ```
 
-
 ## Clean data
 
 ```{r}
 
 landscape_qpcr_data <- landscape %>% 
-  select(sample_id, plate, c(quantity_1:final_bd_load_log))
+  select(sample_id, plate, c(quantity_1:final_bd_load_log)) %>% 
+  mutate(extraction_kit = "ibi_spin_column_blood_tissue_kit",
+         master_mix = "taqman",
+         replicate = "singley",
+         qpcr_machine = "quantstudio_3",
+         extract_lab = "becker_lab",
+         qpcr_lab = "becker_lab",
+         standard = "pisces") %>% 
+  rename(qpcr_plate_id = plate)
 
 
 ```
