@@ -19,15 +19,7 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
 
 [Column Headers]{.underline}: bd_swab_id, extraction_plate_id, qpcr_plate_id, result, average_copy_number, average_ct, average_zoospores, comments, standard, master_mix, replicate, qpcr_machine, extraction_kit, extraction_date, qpcr_date, extract_lab,
 
-standard: pisces
-extraction_kit: ibi_spin_column_blood_tissue_kit
-dillution: 100 uml
-master_mix: tachman
-replicate: ipc, 7 standards
-qpcr_machine: quant studio 3
-extract_lab: becker_lab
-
-
+standard: pisces extraction_kit: ibi_spin_column_blood_tissue_kit dillution: 100 uml master_mix: tachman replicate: ipc, 7 standards qpcr_machine: quant studio 3 extract_lab: becker_lab
 
 # Climate Change Data
 
@@ -41,7 +33,8 @@ clim_change <- read_excel(here("data", "FINAL_DATASET_PCE_qPCRs_RIBBiTR.xlsx"))
 ```
 
 ## Clean Data
-- 100 = its copies
+
+-   100 = its copies
 
 ```{r}
 
@@ -55,7 +48,8 @@ climate_qpcr_data <- clim_change %>%
          qpcr_machine = "quantstudio_3",
          extract_lab = "becker_lab",
          qpcr_lab = "becker_lab",
-         standard = "pisces")
+         standard = "pisces") %>% 
+  rename(average_copy_number = zoo.load..100)
 
 ```
 
@@ -75,15 +69,16 @@ landscape <- read_excel(here("data", "Landscapes_RoL_Becker.xlsx")) %>%
 ```{r}
 
 landscape_qpcr_data <- landscape %>% 
-  select(sample_id, plate, c(quantity_1:final_bd_load_log)) %>% 
+  select(sample_id, plate, c(quantity_1:quantity_average)) %>% 
   mutate(extraction_kit = "ibi_spin_column_blood_tissue_kit",
          master_mix = "taqman",
-         replicate = "singley",
+         replicate = "singley", #????
          qpcr_machine = "quantstudio_3",
          extract_lab = "becker_lab",
          qpcr_lab = "becker_lab",
          standard = "pisces") %>% 
-  rename(qpcr_plate_id = plate)
+  rename(qpcr_plate_id = plate,
+         average_copy_number = quantity_average)
 
 
 ```

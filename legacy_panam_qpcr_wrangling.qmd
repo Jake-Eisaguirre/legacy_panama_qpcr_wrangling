@@ -77,11 +77,11 @@ clean_fall_2012 <- fall_2012 %>%
   mutate(bd_swab_id = str_replace_all(bd_swab_id, "-", "_"),
          average_zoospores = if_else(is.na(average_zoospores), 0, average_zoospores),
          bd_swab_id = str_remove_all(bd_swab_id, "\\*"),
-         standard = "??",
-         master_mix = "??",
+         standard = "pisces",
+         master_mix = "taqman",
          replicate = "triplicate",
-         qpcr_machine = "??",
-         extraction_kit = "??")
+         qpcr_machine = "applied_biosystems_7500",
+         extraction_kit = "qiagen_dneasy")
   
 
 ```
