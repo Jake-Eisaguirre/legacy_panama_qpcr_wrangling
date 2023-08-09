@@ -72,7 +72,7 @@ landscape_qpcr_data <- landscape %>%
   select(sample_id, plate, c(quantity_1:quantity_average)) %>% 
   mutate(extraction_kit = "ibi_spin_column_blood_tissue_kit",
          master_mix = "taqman",
-         replicate = "singley", #????
+         replicate = "duplicate", 
          qpcr_machine = "quantstudio_3",
          extract_lab = "becker_lab",
          qpcr_lab = "becker_lab",
