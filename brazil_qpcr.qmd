@@ -21,6 +21,23 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
 
 standard: pisces extraction_kit: ibi_spin_column_blood_tissue_kit dillution: 100 uml master_mix: tachman replicate: ipc, 7 standards qpcr_machine: quant studio 3 extract_lab: becker_lab
 
+# CT values - climate data
+```{r}
+
+climate_ct <- read_excel(here("data", "climate_ct.xlsx")) %>% 
+  clean_names() %>% 
+  select(id, extraction_date, qpcr_date, plate_name, ct_8) %>% 
+  rename(bd_swab_id = id) %>% 
+  rename(qpcr_plate_id = plate_name) %>% 
+  rename(average_ct = ct_8) %>% 
+  slice(31:3947) %>% 
+  mutate(bd_swab_id = str_replace_all(bd_swab_id, " ", ""),
+         bd_swab_id = str_replace_all(bd_swab_id, "RM", ""),
+         average_ct = if_else(average_ct == "Undetermined", NA, average_ct))
+
+```
+
+
 # Climate Change Data
 
 ## Read in Data
@@ -49,9 +66,13 @@ climate_qpcr_data <- clim_change %>%
          extract_lab = "becker_lab",
          qpcr_lab = "becker_lab",
          standard = "pisces") %>% 
-  rename(average_copy_number = zoo.load..100)
+  rename(average_copy_number = zoo.load..100) %>% 
+  left_join(climate_ct, by = c("bd_swab_id")) %>% 
+  mutate(result = if_else(average_copy_number > 0, "p", "n"))
 
 ```
+
+
 
 # Landscape Data
 
@@ -69,7 +90,7 @@ landscape <- read_excel(here("data", "Landscapes_RoL_Becker.xlsx")) %>%
 ```{r}
 
 landscape_qpcr_data <- landscape %>% 
-  select(sample_id, plate, c(quantity_1:quantity_average)) %>% 
+  select(sample_id, c(quantity_1:quantity_average)) %>% 
   mutate(extraction_kit = "ibi_spin_column_blood_tissue_kit",
          master_mix = "taqman",
          replicate = "duplicate", 
@@ -77,8 +98,11 @@ landscape_qpcr_data <- landscape %>%
          extract_lab = "becker_lab",
          qpcr_lab = "becker_lab",
          standard = "pisces") %>% 
-  rename(qpcr_plate_id = plate,
-         average_copy_number = quantity_average)
+  rename(average_copy_number = quantity_average) %>% 
+  mutate(result_1 = if_else(quantity_1 > 0, "p", "n"),
+         result_2 = if_else(quantity_2 > 0, "p", "n")) %>% 
+  unite(result, c("result_1", "result_2"), sep = ",", na.rm = T) %>% 
+  select(!c(quantity_1, quantity_2))
 
 
 ```
