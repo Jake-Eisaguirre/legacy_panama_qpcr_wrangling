@@ -13,7 +13,7 @@ if(!require(librarian)){
   library(librarian)
 }
 
-shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
+shelf(tidyverse, here, DBI, RPostgres, janitor, readxl, parsedate)
 
 ```
 
