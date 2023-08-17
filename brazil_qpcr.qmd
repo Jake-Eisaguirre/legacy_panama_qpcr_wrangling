@@ -22,6 +22,7 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl, parsedate)
 standard: pisces extraction_kit: ibi_spin_column_blood_tissue_kit dillution: 100 uml master_mix: tachman replicate: ipc, 7 standards qpcr_machine: quant studio 3 extract_lab: becker_lab
 
 # CT values - climate data
+
 ```{r}
 
 climate_ct <- read_excel(here("data", "climate_ct.xlsx")) %>% 
@@ -36,7 +37,6 @@ climate_ct <- read_excel(here("data", "climate_ct.xlsx")) %>%
          average_ct = if_else(average_ct == "Undetermined", NA, average_ct))
 
 ```
-
 
 # Climate Change Data
 
@@ -72,9 +72,9 @@ climate_qpcr_data <- clim_change %>%
          extraction_date = parse_date(extraction_date),
          qpcr_date = parse_date(qpcr_date))
 
+write_csv(climate_qpcr_data, here("clean_qpcr", "climate.csv"))
+
 ```
-
-
 
 # Landscape Data
 
@@ -101,10 +101,19 @@ landscape_qpcr_data <- landscape %>%
          qpcr_lab = "becker_lab",
          standard = "pisces") %>% 
   rename(average_copy_number = quantity_average) %>% 
+  rename(bd_swab_id = sample_id) %>% 
   mutate(result_1 = if_else(quantity_1 > 0, "p", "n"),
          result_2 = if_else(quantity_2 > 0, "p", "n")) %>% 
   unite(result, c("result_1", "result_2"), sep = ",", na.rm = T) %>% 
   select(!c(quantity_1, quantity_2))
 
+write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
+```
+
+## Bind Tables together
+```{r}
+
+clean_brazil_qpcr <- plyr::rbind.fill(landscape_qpcr_data, climate_qpcr_data)
 
 ```
+
