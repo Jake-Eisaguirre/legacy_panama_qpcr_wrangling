@@ -70,7 +70,9 @@ climate_qpcr_data <- clim_change %>%
   left_join(climate_ct, by = c("bd_swab_id")) %>% 
   mutate(result = if_else(average_copy_number > 0, "p", "n"),
          extraction_date = parse_date(extraction_date),
-         qpcr_date = parse_date(qpcr_date))
+         qpcr_date = parse_date(qpcr_date)) %>% 
+  mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number))
+
 
 write_csv(climate_qpcr_data, here("clean_qpcr", "climate.csv"))
 
@@ -105,7 +107,8 @@ landscape_qpcr_data <- landscape %>%
   mutate(result_1 = if_else(quantity_1 > 0, "p", "n"),
          result_2 = if_else(quantity_2 > 0, "p", "n")) %>% 
   unite(result, c("result_1", "result_2"), sep = ",", na.rm = T) %>% 
-  select(!c(quantity_1, quantity_2))
+  select(!c(quantity_1, quantity_2)) %>% 
+  mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number))
 
 write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
 ```
