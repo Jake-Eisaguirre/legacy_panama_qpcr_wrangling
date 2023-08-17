@@ -288,6 +288,24 @@ clean_2019 <- qpcr_2019 %>%
 
 ```
 
+## read in qpcr_lab and clean
+```{r}
+
+labs <- read_csv(here("data_csv", "2012_2017_bdswab_search_clz.csv"))
+
+clean_labs <- labs %>% 
+  select(bd_swab_id, `Who did the qPCR?`) %>% 
+  rename(qpcr_lab = `Who did the qPCR?`) %>% 
+  mutate(qpcr_lab = if_else(qpcr_lab == "Cori's lab - Pitt", "rz_lab", qpcr_lab),
+         qpcr_lab = if_else(qpcr_lab == "Jamie's lab", "jv_lab", qpcr_lab),
+         qpcr_lab = if_else(qpcr_lab == "??", NA, qpcr_lab),
+         qpcr_lab = if_else(qpcr_lab == "Matt Robak - Tulane", "rz_lab", qpcr_lab),
+         qpcr_lab = if_else(qpcr_lab == "Julia Sonn - Tulane", "rz_lab", qpcr_lab),
+         extract_lab = qpcr_lab)
+
+```
+
+
 ## Bind all tables together
 
 ```{r}
@@ -301,12 +319,20 @@ panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelop
          average_copy_number = round(average_copy_number, 2),
          average_ct = round(average_ct, 2),
          across(c(c(bd_swab_id:qpcr_plate_id), c(comments:extraction_kit)), str_to_lower),
-         extract_lab = "",
-         qpcr_lab = "")
+         average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number),
+         average_ct = if_else(average_ct == 0, NA, average_ct),
+         average_zoospores = if_else(average_zoospores == 0, NA, average_zoospores)) %>% 
+  left_join(clean_labs, by = c("bd_swab_id")) %>% 
+  mutate(qpcr_lab = if_else(str_detect(bd_swab_id, "^18"), "rz_lab", qpcr_lab),
+         qpcr_lab = if_else(str_detect(bd_swab_id, "^19"), "rz_lab", qpcr_lab),
+         extract_lab = if_else(str_detect(bd_swab_id, "^19"), "rz_lab", extract_lab),
+         extract_lab = if_else(str_detect(bd_swab_id, "^18"), "rz_lab", extract_lab))
 
+missing_labs <- panama_qpcr %>% 
+  filter(is.na(extract_lab)) %>% 
+  write_csv(here("missing_labs.csv"))
 
-
-write_csv(panama_qpcr, here("data_csv", "panama_qpcr.csv"))
+write_csv(panama_qpcr, here("clean_qpcr", "panama_qpcr.csv"))
 
 ```
 

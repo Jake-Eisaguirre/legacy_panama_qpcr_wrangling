@@ -13,7 +13,7 @@ if(!require(librarian)){
   library(librarian)
 }
 
-shelf(tidyverse, here, DBI, RPostgres, janitor, readxl)
+shelf(tidyverse, here, DBI, RPostgres, janitor, readxl, parsedate)
 
 ```
 
@@ -68,7 +68,9 @@ climate_qpcr_data <- clim_change %>%
          standard = "pisces") %>% 
   rename(average_copy_number = zoo.load..100) %>% 
   left_join(climate_ct, by = c("bd_swab_id")) %>% 
-  mutate(result = if_else(average_copy_number > 0, "p", "n"))
+  mutate(result = if_else(average_copy_number > 0, "p", "n"),
+         extraction_date = parse_date(extraction_date),
+         qpcr_date = parse_date(qpcr_date))
 
 ```
 

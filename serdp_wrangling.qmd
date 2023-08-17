@@ -59,5 +59,11 @@ clean_qpcr <- all_qpcr %>%
          extract_lab = if_else(str_detect(extract_lab, "RZ"), "rz_lab", extract_lab),
          extract_lab = if_else(extract_lab == "Woodhams", "woodhams_lab", extract_lab),
          qpcr_lab = if_else(str_detect(qpcr_lab, "lab"), "rz_lab", qpcr_lab),
-         result = if_else(is.na(average_copy_number), "n", "p"))
+         result = if_else(is.na(average_copy_number), "n", "p"),
+         qpcr_lab = if_else(str_detect(qpcr_lab, "Lab"), "rz_lab", qpcr_lab),
+         qpcr_lab = if_else(qpcr_lab == "unk", NA, qpcr_lab),
+         extract_lab = if_else(extract_lab == "unk", NA, extract_lab))
+
+write_csv(clean_qpcr, here("clean_qpcr", "serdp_qpcr.csv"))
+
 ```
