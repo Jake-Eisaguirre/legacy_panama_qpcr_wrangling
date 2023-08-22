@@ -289,6 +289,7 @@ clean_2019 <- qpcr_2019 %>%
 ```
 
 ## read in qpcr_lab and clean
+
 ```{r}
 
 labs <- read_csv(here("data_csv", "2012_2017_bdswab_search_clz.csv"))
@@ -304,7 +305,6 @@ clean_labs <- labs %>%
          extract_lab = qpcr_lab)
 
 ```
-
 
 ## Bind all tables together
 
@@ -326,7 +326,9 @@ panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelop
   mutate(qpcr_lab = if_else(str_detect(bd_swab_id, "^18"), "rz_lab", qpcr_lab),
          qpcr_lab = if_else(str_detect(bd_swab_id, "^19"), "rz_lab", qpcr_lab),
          extract_lab = if_else(str_detect(bd_swab_id, "^19"), "rz_lab", extract_lab),
-         extract_lab = if_else(str_detect(bd_swab_id, "^18"), "rz_lab", extract_lab))
+         extract_lab = if_else(str_detect(bd_swab_id, "^18"), "rz_lab", extract_lab),
+         qpcr_lab = if_else(is.na(qpcr_lab), "rz_lab", qpcr_lab),
+         extract_lab = if_else(is.na(extract_lab), "rz_lab", extract_lab))
 
 missing_labs <- panama_qpcr %>% 
   filter(is.na(extract_lab)) %>% 
