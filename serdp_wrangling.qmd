@@ -44,7 +44,8 @@ all_qpcr <- plyr::rbind.fill(qpcr_2017, qpcr_2018, qpcr_2019)
 
 ```{r}
 clean_qpcr <- all_qpcr %>% 
-  select(sample_id, extract_plate_id, extract_date, qpcr_plate_id, qpcr_date, sample_bd_ct, sample_bd_qty, sample_bd_swab_qty, extract_lab, qpcr_lab) %>% 
+  select(sample_id, extract_plate_id, extract_date, qpcr_plate_id, qpcr_date, sample_bd_ct, 
+         sample_bd_qty, sample_bd_swab_qty, extract_lab, qpcr_lab) %>% 
   rename(bd_swab_id = sample_id,
          average_ct = sample_bd_ct,
          average_zoospores = sample_bd_swab_qty,
@@ -62,7 +63,8 @@ clean_qpcr <- all_qpcr %>%
          result = if_else(is.na(average_copy_number), "n", "p"),
          qpcr_lab = if_else(str_detect(qpcr_lab, "Lab"), "rz_lab", qpcr_lab),
          qpcr_lab = if_else(qpcr_lab == "unk", NA, qpcr_lab),
-         extract_lab = if_else(extract_lab == "unk", NA, extract_lab))
+         extract_lab = if_else(extract_lab == "unk", NA, extract_lab),
+         swab_type = "mw113")
 
 write_csv(clean_qpcr, here("clean_qpcr", "serdp_qpcr.csv"))
 
