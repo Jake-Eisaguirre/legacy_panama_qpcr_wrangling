@@ -17,7 +17,8 @@ shelf(tidyverse, here, DBI, RPostgres, janitor)
 
 ```
 
+[Column Headers]{.underline}: bd_swab_id, extraction_plate_id, qpcr_plate_id, result, average_copy_number, average_ct, average_zoospores, comments, standard, master_mix, replicate, qpcr_machine, extraction_kit, extraction_date, qpcr_date, extract_lab,
+
 ```{r}
 
 ```
-

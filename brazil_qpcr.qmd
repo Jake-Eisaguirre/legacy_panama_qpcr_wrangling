@@ -114,9 +114,9 @@ write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
 ```
 
 ## Bind Tables together
+
 ```{r}
 
 clean_brazil_qpcr <- plyr::rbind.fill(landscape_qpcr_data, climate_qpcr_data)
 
 ```
-
