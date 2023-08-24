@@ -74,7 +74,7 @@ climate_qpcr_data <- clim_change %>%
   mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number))
 
 
-write_csv(climate_qpcr_data, here("clean_qpcr", "climate.csv"))
+#write_csv(climate_qpcr_data, here("clean_qpcr", "climate.csv"))
 
 ```
 
@@ -110,7 +110,7 @@ landscape_qpcr_data <- landscape %>%
   select(!c(quantity_1, quantity_2)) %>% 
   mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number))
 
-write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
+#write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
 ```
 
 ## Bind Tables together
