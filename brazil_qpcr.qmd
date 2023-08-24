@@ -118,6 +118,8 @@ write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
 ```{r}
 
 clean_brazil_qpcr <- plyr::rbind.fill(landscape_qpcr_data, climate_qpcr_data) %>% 
-  mutate(swab_type = "")
+  mutate(swab_type = "mw113")
+
+write_csv(clean_brazil_qpcr, here("clean_qpcr", "brazil_qpcr.csv"))
 
 ```
