@@ -38,7 +38,7 @@ rm(a)
 
 all_qpcr <- plyr::rbind.fill(panama, serdp, brazil)
 
-write_csv()
+write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
 
 ```
 
