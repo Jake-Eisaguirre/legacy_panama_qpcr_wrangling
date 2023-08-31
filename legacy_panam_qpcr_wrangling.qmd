@@ -1,7 +1,7 @@
 ---
 title: "legacy_panama_qpcr_wrangling"
 format: html
-editor: visual
+editor: source
 ---
 
 ## Load Packages
@@ -329,7 +329,10 @@ panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelop
          extract_lab = if_else(str_detect(bd_swab_id, "^18"), "rz_lab", extract_lab),
          qpcr_lab = if_else(is.na(qpcr_lab), "rz_lab", qpcr_lab),
          extract_lab = if_else(is.na(extract_lab), "rz_lab", extract_lab),
-         swab_type = "mw113")
+         swab_type = "mw113",
+         total_volume_uL = if_else(master_mix == "tagman", 50, 200),
+         dillution_factor = "",
+         amount_template_dna = "")
 
 # missing_labs <- panama_qpcr %>% 
 #   filter(is.na(extract_lab)) %>% 

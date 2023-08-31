@@ -1,7 +1,7 @@
 ---
 title: "serdp_wrangling"
 format: html
-editor: visual
+editor: source
 ---
 
 ## Load Packages
@@ -64,7 +64,10 @@ clean_qpcr <- all_qpcr %>%
          qpcr_lab = if_else(str_detect(qpcr_lab, "Lab"), "rz_lab", qpcr_lab),
          qpcr_lab = if_else(qpcr_lab == "unk", NA, qpcr_lab),
          extract_lab = if_else(extract_lab == "unk", NA, extract_lab),
-         swab_type = "mw113")
+         swab_type = "mw113",
+         total_volume_uL = "",  #if_else(master_mix == "tagman", 50, 200),
+         dillution_factor = "",
+         amount_template_dna = "")
 
 write_csv(clean_qpcr, here("clean_qpcr", "serdp_qpcr.csv"))
 
