@@ -1,7 +1,7 @@
 ---
 title: "Sierra qPCR Wrangling"
 format: html
-editor: visual
+editor: source
 ---
 
 ## Load Packages
@@ -21,4 +21,70 @@ shelf(tidyverse, here, DBI, RPostgres, janitor)
 
 ```{r}
 
+
+#| output: false
+tryCatch({
+    drv <- dbDriver("Postgres")
+    print("Connecting to Database…")
+    connection <- dbConnect(drv,
+                       dbname = Sys.getenv("sn_dbname"),
+                       host = Sys.getenv("sn_host"),
+                       port = Sys.getenv("sn_port"),
+                       user = Sys.getenv("sn_user"),
+                       password = Sys.getenv("sn_password"),
+                       timezone=NULL)
+    print("Database Connected!")
+    },
+    error=function(cond) {
+            print("Unable to connect to Database.")
+    })
+
+
+
+
+
 ```
+## Pull in tables from fdw
+```{r}
+dbExecute(connection, "set search_path to qpcr_fdw")
+
+results <- dbGetQuery(connection, "select * from results;")
+
+results_ucsb <- dbGetQuery(connection, "select * from results_ucsb_import;")
+
+#results_removed <- dbGetQuery(connection, "select * from samples_removed;")
+
+plates <- dbGetQuery(connection, "select * from plates;")
+
+dbExecute(connection, "set search_path = 'public';")
+
+bd_load <- dbGetQuery(connection, "select * from bd_load;")
+
+```
+
+## Start by aligning `bd_load` tables
+```{r}
+
+ucsb_qpcr <- bd_load %>% 
+  rename(bd_swab_id = sample_id,
+         standard = std_type, # is this the equivalent of a `pisces` standard?
+         average_copy_number = start_quant, # is start quant average dna copy numnber in a well or ct? Where do I find Cq column?
+         dilution_factor = dilution,
+         ITS1_copies = bd_load) %>% 
+  mutate(replicate = case_when(replicate == 1 ~ "singley",
+                               replicate == 2 ~ "duplicate",
+                               replicate == 3 ~ "triplicate",
+                               replicate == 4 ~ "quadruplicate",
+                               replicate == 5 ~ "quintuple"),
+         extract_lab = "SNARL",
+         qpcr_lab = "SNARL",
+         swab_type = "mw113",
+         master_mix = "taqman", # has same master mix been used the whole time?
+         qpcr_machine = "",
+         amount_template_dna = "",  #units ?
+         total_volum_uL - "",
+         dilution_factor = paste("1:", dilution_factor, sep = "")) 
+
+
+```
+
