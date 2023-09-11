@@ -50,7 +50,8 @@ dbExecute(connection, "set search_path to qpcr_fdw")
 
 results <- dbGetQuery(connection, "select * from results;")
 
-results_ucsb <- dbGetQuery(connection, "select * from results_ucsb_import;")
+results_ucsb <- dbGetQuery(connection, "select * from results_ucsb_import;") %>% 
+  rename(id = sample_id)
 
 #results_removed <- dbGetQuery(connection, "select * from samples_removed;")
 
@@ -62,6 +63,17 @@ bd_load <- dbGetQuery(connection, "select * from bd_load;")
 
 ```
 
+## pull out quant cycle from results and results_ucsb
+```{r}
+
+quant_cycle <- plyr::rbind.fill(results, results_ucsb) %>% 
+  select(sample_id, quant_cycle, plate_id) %>% 
+  rename(average_ct = quant_cycle,
+         qpcr_plate_id = plate_id)
+
+```
+
+
 ## Start by aligning `bd_load` tables
 ```{r}
 
@@ -70,20 +82,46 @@ ucsb_qpcr <- bd_load %>%
          standard = std_type, # is this the equivalent of a `pisces` standard?
          average_copy_number = start_quant, # is start quant average dna copy numnber in a well or ct? Where do I find Cq column?
          dilution_factor = dilution,
-         ITS1_copies = bd_load) %>% 
-  mutate(replicate = case_when(replicate == 1 ~ "singley",
-                               replicate == 2 ~ "duplicate",
-                               replicate == 3 ~ "triplicate",
-                               replicate == 4 ~ "quadruplicate",
-                               replicate == 5 ~ "quintuple"),
-         extract_lab = "SNARL",
+         average_ITS1_copies = bd_load) %>% 
+  mutate(extract_lab = "SNARL",
          qpcr_lab = "SNARL",
          swab_type = "mw113",
          master_mix = "taqman", # has same master mix been used the whole time?
          qpcr_machine = "",
          amount_template_dna = "",  #units ?
-         total_volum_uL - "",
-         dilution_factor = paste("1:", dilution_factor, sep = "")) 
+         total_volume_uL = "",
+         dilution_factor = paste("1:", dilution_factor, sep = ""),
+         extraction_kit = "PrepMan") %>% 
+  left_join(quant_cycle, by = c("bd_swab_id" = "sample_id")) %>% 
+  group_by(bd_swab_id) %>% 
+  mutate(result = if_else(average_copy_number > 0, "p", "n"),
+         average_copy_number = mean(average_copy_number),
+         average_ct = mean(average_ct),
+         average_ITS1_copies = mean(average_ITS1_copies),
+         #result = paste(result, result, sep = ","),
+         replicate = case_when(length(bd_swab_id) == 1 ~ "singley",
+                               length(bd_swab_id) == 2 ~ "duplicate",
+                               length(bd_swab_id) == 3 ~ "triplicate",
+                               length(bd_swab_id) == 4 ~ "quadruplicate",
+                               length(bd_swab_id) == 5 ~ "quintuple"),
+         result = paste(result, collapse = ',')) %>% 
+  filter(!duplicated(bd_swab_id))
+
+
+# 
+# (replicate = case_when(replicate == 1 ~ "singley",
+#                                replicate == 2 ~ "duplicate",
+#                                replicate == 3 ~ "triplicate",
+#                                replicate == 4 ~ "quadruplicate",
+#                                replicate == 5 ~ "quintuple"),
+
+
+# ,
+#          result = case_when(replicate == "singley" ~ result,
+#                             replicate == "duplicate" ~ paste(result, result, sep = ","),
+#                             replicate == "triplicate" ~ paste(result, result, result, sep = ","),
+#                             replicate == "quadruplicate" ~ paste(result, result, result, result, sep = ","),
+#                             replicate == "quintuple" ~ paste(result, result, result, result, result, sep = ","))
 
 
 ```
