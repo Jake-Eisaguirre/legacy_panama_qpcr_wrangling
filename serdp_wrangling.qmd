@@ -65,9 +65,9 @@ clean_qpcr <- all_qpcr %>%
          qpcr_lab = if_else(qpcr_lab == "unk", NA, qpcr_lab),
          extract_lab = if_else(extract_lab == "unk", NA, extract_lab),
          swab_type = "mw113",
-         total_volume_uL = "",  #if_else(master_mix == "tagman", 50, 200),
-         dillution_factor = "",
-         amount_template_dna = "")
+         total_volume_uL = "200",  
+         dillution_factor = "1:1",
+         amount_template_dna = "5")
 
 write_csv(clean_qpcr, here("clean_qpcr", "serdp_qpcr.csv"))
 
