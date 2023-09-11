@@ -19,7 +19,13 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl, parsedate)
 
 [Column Headers]{.underline}: bd_swab_id, extraction_plate_id, qpcr_plate_id, result, average_copy_number, average_ct, average_zoospores, comments, standard, master_mix, replicate, qpcr_machine, extraction_kit, extraction_date, qpcr_date, extract_lab,
 
-standard: pisces extraction_kit: ibi_spin_column_blood_tissue_kit dillution: 100 uml master_mix: tachman replicate: ipc, 7 standards qpcr_machine: quant studio 3 extract_lab: becker_lab
+standard: pisces 
+extraction_kit: ibi_spin_column_blood_tissue_kit 
+dillution: 100 uml 
+master_mix: tachman 
+replicate: ipc, 7 standards 
+qpcr_machine: quant studio 3 
+extract_lab: becker_lab
 
 (1) the factor by which the extracted DNA was diluted before it went into the qPCR well (we sometimes didn't dilute at all and sometimes diluted 1:10 with water), (2) the total volume of the DNA extraction (for us it is usually 200 uL, for Taqman folks I think it is more like 50 uL), and (3) the amount of template DNA that went into the well.
 
