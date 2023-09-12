@@ -83,15 +83,15 @@ ucsb_qpcr <- bd_load %>%
          average_copy_number = start_quant, # is start quant average dna copy numnber in a well or ct? Where do I find Cq column?
          dilution_factor = dilution,
          average_ITS1_copies = bd_load) %>% 
-  mutate(extract_lab = "SNARL",
-         qpcr_lab = "SNARL",
+  mutate(extract_lab = "snarl",
+         qpcr_lab = "snarl",
          swab_type = "mw113",
          master_mix = "taqman", # has same master mix been used the whole time?
          qpcr_machine = "",
-         amount_template_dna = "",  #units ?
+         volume_template_dna_uL = "",  #units ?
          total_volume_uL = "",
          dilution_factor = paste("1:", dilution_factor, sep = ""),
-         extraction_kit = "PrepMan") %>% 
+         extraction_kit = "prepman") %>% 
   left_join(quant_cycle, by = c("bd_swab_id" = "sample_id")) %>% 
   group_by(bd_swab_id) %>% 
   mutate(result = if_else(average_copy_number > 0, "p", "n"),

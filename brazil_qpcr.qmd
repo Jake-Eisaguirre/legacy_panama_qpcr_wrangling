@@ -79,7 +79,11 @@ climate_qpcr_data <- clim_change %>%
   mutate(result = if_else(average_copy_number > 0, "p", "n"),
          extraction_date = parse_date(extraction_date),
          qpcr_date = parse_date(qpcr_date)) %>% 
-  mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number))
+  mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number),
+         swab_type = "mw113",
+         total_volume_uL = "25",  #if_else(master_mix == "tagman", 50, 200),
+         dillution_factor = "1:1",
+         volume_template_dna_uL = "5")
 
 
 #write_csv(climate_qpcr_data, here("clean_qpcr", "climate.csv"))
@@ -116,7 +120,10 @@ landscape_qpcr_data <- landscape %>%
          result_2 = if_else(quantity_2 > 0, "p", "n")) %>% 
   unite(result, c("result_1", "result_2"), sep = ",", na.rm = T) %>% 
   select(!c(quantity_1, quantity_2)) %>% 
-  mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number))
+  mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number),
+         total_volume_uL = "",
+         dillution_factor = "",
+         volume_template_dna_uL = "")
 
 #write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
 ```
@@ -126,10 +133,7 @@ landscape_qpcr_data <- landscape %>%
 ```{r}
 
 clean_brazil_qpcr <- plyr::rbind.fill(landscape_qpcr_data, climate_qpcr_data) %>% 
-  mutate(swab_type = "mw113",
-         total_volume_uL = "",  #if_else(master_mix == "tagman", 50, 200),
-         dillution_factor = "",
-         amount_template_dna = "")
+  mutate(swab_type = "mw113")
 
 write_csv(clean_brazil_qpcr, here("clean_qpcr", "brazil_qpcr.csv"))
 

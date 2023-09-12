@@ -330,9 +330,9 @@ panama_qpcr <- plyr::rbind.fill(clean_2014, clean_2015, clean_2016, clean_atelop
          qpcr_lab = if_else(is.na(qpcr_lab), "rz_lab", qpcr_lab),
          extract_lab = if_else(is.na(extract_lab), "rz_lab", extract_lab),
          swab_type = "mw113",
-         total_volume_uL = if_else(master_mix == "tagman", 50, 200),
-         dillution_factor = "",
-         amount_template_dna = "")
+         total_volume_uL = if_else(master_mix == "taqman", 50, 200),
+         dillution_factor = if_else(row_number() > 2942, "1:1", "1:10"), # very dangerous line of code. Make sure nothin above changes
+         volume_template_dna_uL = "5")
 
 # missing_labs <- panama_qpcr %>% 
 #   filter(is.na(extract_lab)) %>% 
