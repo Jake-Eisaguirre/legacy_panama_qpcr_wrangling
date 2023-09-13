@@ -67,9 +67,10 @@ bd_load <- dbGetQuery(connection, "select * from bd_load;")
 ```{r}
 
 quant_cycle <- plyr::rbind.fill(results, results_ucsb) %>% 
-  select(sample_id, quant_cycle, plate_id) %>% 
+  select(sample_id, quant_cycle, plate_id, well_notes) %>% 
   rename(average_ct = quant_cycle,
-         qpcr_plate_id = plate_id)
+         qpcr_plate_id = plate_id,
+         comments = well_notes)
 
 ```
 
@@ -108,21 +109,7 @@ ucsb_qpcr <- bd_load %>%
   filter(!duplicated(bd_swab_id))
 
 
-# 
-# (replicate = case_when(replicate == 1 ~ "singley",
-#                                replicate == 2 ~ "duplicate",
-#                                replicate == 3 ~ "triplicate",
-#                                replicate == 4 ~ "quadruplicate",
-#                                replicate == 5 ~ "quintuple"),
-
-
-# ,
-#          result = case_when(replicate == "singley" ~ result,
-#                             replicate == "duplicate" ~ paste(result, result, sep = ","),
-#                             replicate == "triplicate" ~ paste(result, result, result, sep = ","),
-#                             replicate == "quadruplicate" ~ paste(result, result, result, result, sep = ","),
-#                             replicate == "quintuple" ~ paste(result, result, result, result, result, sep = ","))
-
+write_csv(ucsb_qpcr, here("clean_qpcr", "ucsb_qpcr.csv"))
 
 ```
 

@@ -81,9 +81,9 @@ climate_qpcr_data <- clim_change %>%
          qpcr_date = parse_date(qpcr_date)) %>% 
   mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number),
          swab_type = "mw113",
-         total_volume_uL = "25",  #if_else(master_mix == "tagman", 50, 200),
+         total_volume_uL = 25,  #if_else(master_mix == "tagman", 50, 200),
          dillution_factor = "1:1",
-         volume_template_dna_uL = "5")
+         volume_template_dna_uL = 5)
 
 
 #write_csv(climate_qpcr_data, here("clean_qpcr", "climate.csv"))

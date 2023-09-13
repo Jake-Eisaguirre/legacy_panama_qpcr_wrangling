@@ -40,7 +40,9 @@ rm(a)
 
 all_qpcr <- plyr::rbind.fill(panama, serdp, brazil) %>% 
   select(!c(extraction_plate_id, qpcr_plate_id)) %>% 
-  relocate(average_ct, .before = average_copy_number)
+  relocate(average_ct, .before = average_copy_number) %>% 
+  relocate(c("total_volume_uL":"volume_template_dna_uL"), .after = average_copy_number) %>% 
+  relocate(comments, .after = swab_type)
 
 write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
 
