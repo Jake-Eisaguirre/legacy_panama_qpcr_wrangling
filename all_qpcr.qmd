@@ -20,6 +20,8 @@ shelf(tidyverse, here, DBI, RPostgres, janitor, readxl, parsedate, stringr)
 ## Read in clean tables
 
 ```{r}
+#| messages: false
+#| warning: false
 files <- list.files(here("clean_qpcr"))
 
 for (i in 1:n_distinct(files)) {
@@ -42,7 +44,13 @@ all_qpcr <- plyr::rbind.fill(panama, serdp, brazil) %>%
   select(!c(extraction_plate_id, qpcr_plate_id)) %>% 
   relocate(average_ct, .before = average_copy_number) %>% 
   relocate(c("total_volume_uL":"volume_template_dna_uL"), .after = average_copy_number) %>% 
-  relocate(comments, .after = swab_type)
+  relocate(comments, .after = swab_type) %>% 
+  rename(average_copy_number_per_swab = average_zoospores) %>% 
+  mutate(average_copy_number_per_swab = if_else(is.na(average_copy_number_per_swab), 0, average_copy_number_per_swab),
+         average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
+         detected = if_else(average_copy_number > 0, 1, 0)) %>% 
+  relocate(detected, .after = bd_swab_id) %>% 
+  relocate(result, .before = replicate)
 
 write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
 
