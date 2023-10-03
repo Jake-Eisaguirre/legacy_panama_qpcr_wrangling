@@ -80,15 +80,15 @@ quant_cycle <- plyr::rbind.fill(results, results_ucsb) %>%
 
 ucsb_qpcr <- bd_load %>% 
   rename(bd_swab_id = sample_id,
-         standard = std_type, # is this the equivalent of a `pisces` standard?
-         average_copy_number = start_quant, # is start quant average dna copy numnber in a well or ct? Where do I find Cq column?
+         standard = std_type, 
+         average_copy_number = start_quant, 
          dilution_factor = dilution,
-         average_ITS1_copies = bd_load) %>% 
+         average_ITS1_copies_per_swab = bd_load) %>% 
   mutate(extract_lab = "snarl",
          qpcr_lab = "snarl",
          swab_type = "mw113",
-         master_mix = "taqman", # has same master mix been used the whole time?
-         qpcr_machine = "",
+         master_mix = "taqman", 
+         qpcr_machine = "", # same machine
          volume_template_dna_uL = "",  #units ?
          total_volume_uL = "",
          dilution_factor = paste("1:", dilution_factor, sep = ""),
@@ -96,9 +96,9 @@ ucsb_qpcr <- bd_load %>%
   left_join(quant_cycle, by = c("bd_swab_id" = "sample_id")) %>% 
   group_by(bd_swab_id) %>% 
   mutate(result = if_else(average_copy_number > 0, "p", "n"),
-         average_copy_number = mean(average_copy_number),
+         average_ITS1_copies_per_swab = mean(average_ITS1_copies_per_swab),
          average_ct = mean(average_ct),
-         average_ITS1_copies = mean(average_ITS1_copies),
+         #average_ITS1_copies = mean(average_ITS1_copies),
          #result = paste(result, result, sep = ","),
          replicate = case_when(length(bd_swab_id) == 1 ~ "singley",
                                length(bd_swab_id) == 2 ~ "duplicate",
@@ -106,7 +106,8 @@ ucsb_qpcr <- bd_load %>%
                                length(bd_swab_id) == 4 ~ "quadruplicate",
                                length(bd_swab_id) == 5 ~ "quintuple"),
          result = paste(result, collapse = ',')) %>% 
-  filter(!duplicated(bd_swab_id))
+  filter(!duplicated(bd_swab_id)) %>% 
+  mutate()
 
 
 write_csv(ucsb_qpcr, here("clean_qpcr", "ucsb_qpcr.csv"))

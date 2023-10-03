@@ -122,8 +122,8 @@ landscape_qpcr_data <- landscape %>%
   select(!c(quantity_1, quantity_2)) %>% 
   mutate(average_copy_number = if_else(average_copy_number == 0, NA, average_copy_number),
          total_volume_uL = "",
-         dillution_factor = "",
-         volume_template_dna_uL = "")
+         dillution_factor = "1:1",
+         volume_template_dna_uL = 4)
 
 #write_csv(landscape_qpcr_data, here("clean_qpcr", "landscape.csv"))
 ```

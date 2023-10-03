@@ -40,7 +40,7 @@ rm(a)
 
 ```{r}
 
-all_qpcr <- plyr::rbind.fill(panama, serdp, brazil) %>% 
+all_qpcr <- plyr::rbind.fill(panama, serdp, brazil, ucsb) %>% 
   select(!c(extraction_plate_id, qpcr_plate_id)) %>% 
   relocate(average_ct, .before = average_copy_number) %>% 
   relocate(c("total_volume_uL":"volume_template_dna_uL"), .after = average_copy_number) %>% 
@@ -50,7 +50,10 @@ all_qpcr <- plyr::rbind.fill(panama, serdp, brazil) %>%
          average_copy_number = if_else(is.na(average_copy_number), 0, average_copy_number),
          detected = if_else(average_copy_number > 0, 1, 0)) %>% 
   relocate(detected, .after = bd_swab_id) %>% 
-  relocate(result, .before = replicate)
+  relocate(result, .before = replicate) %>% 
+  relocate(average_ITS1_copies_per_swab, .after = average_copy_number_per_swab) %>% 
+  unite(dilution_factor, c("dilution_factor", "dillution_factor"), na.rm = T, sep = "") %>% 
+  mutate(dilution_factor = if_else(dilution_factor == "", NA, dilution_factor))
 
 write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
 
