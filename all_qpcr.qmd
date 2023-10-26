@@ -52,9 +52,43 @@ all_qpcr <- plyr::rbind.fill(panama, serdp, brazil, ucsb) %>%
   relocate(detected, .after = bd_swab_id) %>% 
   relocate(result, .before = replicate) %>% 
   relocate(average_ITS1_copies_per_swab, .after = average_copy_number_per_swab) %>% 
+  relocate(its_multiplyer, .before = average_copy_number_per_swab) %>% 
   unite(dilution_factor, c("dilution_factor", "dillution_factor"), na.rm = T, sep = "") %>% 
-  mutate(dilution_factor = if_else(dilution_factor == "", NA, dilution_factor))
+  mutate(dilution_factor = if_else(dilution_factor == "", NA, dilution_factor)) %>% 
+  rename(average_its1_copies_per_swab=average_ITS1_copies_per_swab) %>% 
+  mutate(standard = if_else(standard == "pisces", "plasmid-pisces", standard))
 
 write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
 
 ```
+
+
+```{r}
+#database connection
+connection <- dbConnect(drv = dbDriver("Postgres"),
+                        dbname = Sys.getenv("aws_dbname"),
+                        host = Sys.getenv("aws_host"),
+                        port = Sys.getenv("aws_port"),
+                        user = Sys.getenv("aws_user"),
+                        password = Sys.getenv("aws_password"))
+#search path
+dbExecute(connection, "set search_path to survey_data")
+
+#query Data
+bd_comp <- "select r.region, s.site, v.date, s2.detection_type, c.species_capture, c.bd_swab_id, bd.bd_swab_id
+              from region r
+              join site s on r.region_id = s.region_id
+              join visit v on s.site_id = v.site_id
+              join survey s2 on v.visit_id = s2.visit_id
+              join capture c on s2.survey_id = c.survey_id
+              join qpcr_bd_results bd on c.bd_swab_id = bd.bd_swab_id;"
+
+bd_comp <- dbGetQuery(connection, bd_comp)
+
+missing_ids <- anti_join(all_qpcr, bd_comp, by = c("bd_swab_id"))
+
+c_cap <- "select c.bd_swab_id from capture c"
+c_cap_id <- dbGetQuery(connection, c_cap)
+
+```
+

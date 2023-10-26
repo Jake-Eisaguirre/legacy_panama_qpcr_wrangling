@@ -83,7 +83,18 @@ climate_qpcr_data <- clim_change %>%
          swab_type = "mw113",
          total_volume_uL = 25,  #if_else(master_mix == "tagman", 50, 200),
          dillution_factor = "1:1",
-         volume_template_dna_uL = 5)
+         volume_template_dna_uL = 5) %>% 
+  mutate(bd_swab_id = if_else(bd_swab_id == "1", "01", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "2", "02", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "3", "03", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "4", "04", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "5", "05", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "6", "06", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "7", "07", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "8", "08", bd_swab_id),
+         bd_swab_id = if_else(bd_swab_id == "9", "09", bd_swab_id))
+
+
 
 
 #write_csv(climate_qpcr_data, here("clean_qpcr", "climate.csv"))

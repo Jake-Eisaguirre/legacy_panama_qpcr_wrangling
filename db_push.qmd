@@ -62,4 +62,3 @@ dbWriteTable(connection, 'qpcr_bd_results', qpcr_bd_results, overwrite = T)
 
 
 ```
-

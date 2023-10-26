@@ -182,7 +182,7 @@ clean_2015 <- qpcr_2015 %>%
          standard = "pisces",
          master_mix = "taqman",
          replicate = "triplicate",
-         qpcr_machine = "quanstudio_3",
+         qpcr_machine = "quantstudio_3",
          extraction_kit = "qiagen_dneasy")
   
 
@@ -348,8 +348,8 @@ write_csv(panama_qpcr, here("clean_qpcr", "panama_qpcr.csv"))
 
 # all_ids <- read_csv(here("data_csv", "2012_2017_bdswab_search_clz.csv"))
 # 
-# missing_ids <-  all_ids %>% 
-#   anti_join(panama_qpcr, by = c("bd_swab_id")) 
+# missing_ids <-  all_ids %>%
+#   anti_join(panama_qpcr, by = c("bd_swab_id"))
 # 
 # missing_ids <- missing_ids[-(90:187),]
 # 
@@ -357,8 +357,8 @@ write_csv(panama_qpcr, here("clean_qpcr", "panama_qpcr.csv"))
 # 
 # 
 # 
-# plates <- panama_qpcr %>% 
-#   select(bd_swab_id, extraction_plate_id, pcr_plate_id) %>% 
+# plates <- panama_qpcr %>%
+#   select(bd_swab_id, extraction_plate_id, pcr_plate_id) %>%
 #   write_csv(here("data_csv", "extraction_ids.csv"))
   
 

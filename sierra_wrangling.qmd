@@ -74,6 +74,7 @@ quant_cycle <- plyr::rbind.fill(results, results_ucsb) %>%
 
 ```
 
+# pisces standard always plasmid of genomic
 
 ## Start by aligning `bd_load` tables
 ```{r}
@@ -88,9 +89,9 @@ ucsb_qpcr <- bd_load %>%
          qpcr_lab = "snarl",
          swab_type = "mw113",
          master_mix = "taqman", 
-         qpcr_machine = "", # same machine
-         volume_template_dna_uL = "",  #units ?
-         total_volume_uL = "",
+         qpcr_machine = "biorad_cfx96", 
+         volume_template_dna_uL = "5",  
+         total_volume_uL = "25",
          dilution_factor = paste("1:", dilution_factor, sep = ""),
          extraction_kit = "prepman") %>% 
   left_join(quant_cycle, by = c("bd_swab_id" = "sample_id")) %>% 
@@ -107,7 +108,8 @@ ucsb_qpcr <- bd_load %>%
                                length(bd_swab_id) == 5 ~ "quintuple"),
          result = paste(result, collapse = ',')) %>% 
   filter(!duplicated(bd_swab_id)) %>% 
-  mutate()
+  filter(str_detect(bd_swab_id, "RKS")) %>% 
+  mutate(standard = if_else(standard == "plasmid", "plasmid-briggs", standard))
 
 
 write_csv(ucsb_qpcr, here("clean_qpcr", "ucsb_qpcr.csv"))
