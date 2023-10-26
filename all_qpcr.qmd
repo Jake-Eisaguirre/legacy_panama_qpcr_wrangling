@@ -52,11 +52,12 @@ all_qpcr <- plyr::rbind.fill(panama, serdp, brazil, ucsb) %>%
   relocate(detected, .after = bd_swab_id) %>% 
   relocate(result, .before = replicate) %>% 
   relocate(average_ITS1_copies_per_swab, .after = average_copy_number_per_swab) %>% 
-  relocate(its_multiplyer, .before = average_copy_number_per_swab) %>% 
+  #relocate(its_multiplyer, .before = average_copy_number_per_swab) %>% 
   unite(dilution_factor, c("dilution_factor", "dillution_factor"), na.rm = T, sep = "") %>% 
   mutate(dilution_factor = if_else(dilution_factor == "", NA, dilution_factor)) %>% 
   rename(average_its1_copies_per_swab=average_ITS1_copies_per_swab) %>% 
-  mutate(standard = if_else(standard == "pisces", "plasmid-pisces", standard))
+  mutate(standard = if_else(standard == "pisces", "plasmid-pisces", standard)) %>% 
+  select(!c(average_its1_copies_per_swab, average_copy_number_per_swab)) # remove for now
 
 write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
 
