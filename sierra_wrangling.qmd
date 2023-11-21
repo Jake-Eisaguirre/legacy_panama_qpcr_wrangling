@@ -88,7 +88,7 @@ ucsb_qpcr <- bd_load %>%
   mutate(extract_lab = "snarl",
          qpcr_lab = "snarl",
          swab_type = "mw113",
-         master_mix = "taqman", 
+         master_mix = "bioline", 
          qpcr_machine = "biorad_cfx96", 
          volume_template_dna_uL = "5",  
          total_volume_uL = "25",

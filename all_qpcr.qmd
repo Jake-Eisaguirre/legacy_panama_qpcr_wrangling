@@ -57,7 +57,22 @@ all_qpcr <- plyr::rbind.fill(panama, serdp, brazil, ucsb) %>%
   mutate(dilution_factor = if_else(dilution_factor == "", NA, dilution_factor)) %>% 
   rename(average_its1_copies_per_swab=average_ITS1_copies_per_swab) %>% 
   mutate(standard = if_else(standard == "pisces", "plasmid-pisces", standard)) %>% 
-  select(!c(average_its1_copies_per_swab, average_copy_number_per_swab)) # remove for now
+  select(!c(average_its1_copies_per_swab, average_copy_number_per_swab)) %>% # remove for now
+  rename(total_qpcr_volume_uL = total_volume_uL,
+         qpcr_dilution_factor = dilution_factor,
+         average_target_quant = average_copy_number) %>% 
+  mutate(qpcr_dilution_factor = as.numeric(str_replace(qpcr_dilution_factor, "1:", "")),
+         standard_target_type = if_else(standard %in% c("plasmid-pisces", "plasmid-briggs", "gblock"), "ITS1", "zoospore"),
+         qpcr_machine = if_else(qpcr_machine == "applied_biosystems_7500", "abi_7500", qpcr_machine),
+         extraction_kit = if_else(is.na(extraction_kit), "qiagen_dneasy", extraction_kit),
+         extract_volume_uL = case_when(extraction_kit == "prepman" ~ 40,
+                                       extraction_kit == "qiagen_dneasy" ~ 200,
+                                       extraction_kit == "ibi_spin_column_blood_tissue_kit" ~ 200,
+                                       extraction_kit == "zymo_quick_dna" ~ 200),
+         target_quant_per_swab = (average_target_quant * extract_volume_uL) / (volume_template_dna_uL * qpcr_dilution_factor)) %>% 
+  relocate(standard_target_type, .before = standard) %>% 
+  relocate(extract_volume_uL, .after = volume_template_dna_uL) %>% 
+  relocate(target_quant_per_swab, .after = extract_volume_uL)
 
 write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
 
