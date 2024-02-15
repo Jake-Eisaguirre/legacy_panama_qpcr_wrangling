@@ -57,7 +57,7 @@ all_qpcr <- plyr::rbind.fill(panama, serdp, brazil, ucsb) %>%
   mutate(dilution_factor = if_else(dilution_factor == "", NA, dilution_factor)) %>% 
   rename(average_its1_copies_per_swab=average_ITS1_copies_per_swab) %>% 
   mutate(standard = if_else(standard == "pisces", "plasmid-pisces", standard)) %>% 
-  select(!c(average_its1_copies_per_swab, average_copy_number_per_swab)) %>% # remove for now
+  select(!c(average_copy_number_per_swab)) %>% # remove for now
   rename(total_qpcr_volume_uL = total_volume_uL,
          qpcr_dilution_factor = dilution_factor,
          average_target_quant = average_copy_number) %>% 

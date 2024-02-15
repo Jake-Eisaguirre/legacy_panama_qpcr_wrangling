@@ -66,11 +66,26 @@ bd_load <- dbGetQuery(connection, "select * from bd_load;")
 ## pull out quant cycle from results and results_ucsb
 ```{r}
 
-quant_cycle <- plyr::rbind.fill(results, results_ucsb) %>% 
+result_quant_cycle <- results %>% 
   select(sample_id, quant_cycle, plate_id, well_notes) %>% 
   rename(average_ct = quant_cycle,
          qpcr_plate_id = plate_id,
-         comments = well_notes)
+         comments = well_notes) %>% 
+  filter(str_detect(sample_id, "RKS")) %>% 
+  group_by(sample_id) %>% 
+  reframe(average_ct = mean(average_ct, na.rm = T))
+
+ucsb_results_quant_cycle <- results_ucsb %>% 
+  select(id, quant_cycle) %>% 
+  rename(average_ct = quant_cycle,
+         sample_id = id) %>% 
+  filter(str_detect(sample_id, "RKS"))%>% 
+  group_by(sample_id) %>% 
+  reframe(average_ct = mean(average_ct, na.rm = T))
+
+quant_cycle <- plyr::rbind.fill(result_quant_cycle, ucsb_results_quant_cycle) %>% 
+  mutate(average_ct = if_else(is.nan(average_ct), NA, average_ct))
+  
 
 ```
 
@@ -80,6 +95,7 @@ quant_cycle <- plyr::rbind.fill(results, results_ucsb) %>%
 ```{r}
 
 ucsb_qpcr <- bd_load %>% 
+  #filter(str_detect(sample_id, "RKS")) %>% 
   rename(bd_swab_id = sample_id,
          standard = std_type, 
          average_copy_number = start_quant, 
@@ -97,8 +113,9 @@ ucsb_qpcr <- bd_load %>%
   left_join(quant_cycle, by = c("bd_swab_id" = "sample_id")) %>% 
   group_by(bd_swab_id) %>% 
   mutate(result = if_else(average_copy_number > 0, "p", "n"),
-         average_ITS1_copies_per_swab = mean(average_ITS1_copies_per_swab),
-         average_ct = mean(average_ct),
+         #average_ITS1_copies_per_swab = mean(average_ITS1_copies_per_swab),
+         #average_ct = mean(average_ct),
+         #average_copy_number = mean(average_copy_number),
          #average_ITS1_copies = mean(average_ITS1_copies),
          #result = paste(result, result, sep = ","),
          replicate = case_when(length(bd_swab_id) == 1 ~ "singley",
@@ -107,7 +124,7 @@ ucsb_qpcr <- bd_load %>%
                                length(bd_swab_id) == 4 ~ "quadruplicate",
                                length(bd_swab_id) == 5 ~ "quintuple"),
          result = paste(result, collapse = ',')) %>% 
-  filter(!duplicated(bd_swab_id)) %>% 
+  #filter(!duplicated(bd_swab_id)) %>% 
   filter(str_detect(bd_swab_id, "RKS")) %>% 
   mutate(standard = if_else(standard == "plasmid", "plasmid-briggs", standard))
 

@@ -59,6 +59,8 @@ dbExecute(connection, "set search_path = 'survey_data';")
 
 dbWriteTable(connection, 'qpcr_bd_results', qpcr_bd_results, overwrite = T)
 
+dbExecute(connection, 'commit;')
+
 
 
 ```
