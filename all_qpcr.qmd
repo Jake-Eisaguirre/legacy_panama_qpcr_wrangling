@@ -69,12 +69,31 @@ all_qpcr <- plyr::rbind.fill(panama, serdp, brazil, ucsb) %>%
                                        extraction_kit == "qiagen_dneasy" ~ 200,
                                        extraction_kit == "ibi_spin_column_blood_tissue_kit" ~ 200,
                                        extraction_kit == "zymo_quick_dna" ~ 200),
-         target_quant_per_swab = (average_target_quant * extract_volume_uL) / (volume_template_dna_uL * qpcr_dilution_factor)) %>% 
+         target_quant_per_swab = (average_target_quant * extract_volume_uL) / (volume_template_dna_uL * qpcr_dilution_factor),
+         target_quant_per_swab = if_else(str_detect("RKS", bd_swab_id)| standard_target_type == "zoospore", 
+                                         (target_quant_per_swab * 60), 
+                                         target_quant_per_swab)) %>% 
   relocate(standard_target_type, .before = standard) %>% 
   relocate(extract_volume_uL, .after = volume_template_dna_uL) %>% 
   relocate(target_quant_per_swab, .after = extract_volume_uL)
 
 write_csv(all_qpcr, here("final_qpcr", "merged_qpcr.csv"))
+
+```
+
+
+```{r}
+
+# sn_fig <- all_qpcr %>%
+#   mutate(target_quant_per_swab = if_else(str_detect("RKS", bd_swab_id)| standard_target_type == "zoospore",
+#                                          (target_quant_per_swab * 60),
+#                                          target_quant_per_swab))
+# 
+# ggplot(all_qpcr, aes(x=log(average_its1_copies_per_swab),
+#                  y=log(target_quant_per_swab),
+#                  color=standard,
+#                  shape = standard)) +
+#   geom_jitter(width=0.8, height=0.8, alpha = I(0.4))
 
 ```
 
